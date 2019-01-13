@@ -1,0 +1,7 @@
+[package]
+name = "tictactoe"
+version = "0.1.0"
+authors = ["Ryan O'Beirne <ryanobeirne@gmail.com>"]
+edition = "2018"
+
+[dependencies]
