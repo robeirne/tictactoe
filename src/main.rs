@@ -135,6 +135,9 @@ impl Square {
             FromIterator::from_iter(vec![Square::G, Square::H, Square::I]),
             FromIterator::from_iter(vec![Square::C, Square::E, Square::G]),
             FromIterator::from_iter(vec![Square::A, Square::E, Square::I]),
+            FromIterator::from_iter(vec![Square::A, Square::D, Square::G]),
+            FromIterator::from_iter(vec![Square::B, Square::E, Square::H]),
+            FromIterator::from_iter(vec![Square::C, Square::F, Square::I]),
         ]
     }
 }
