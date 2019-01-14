@@ -89,7 +89,7 @@ impl Game {
         let x_squares = self.player_squares(Player::X);
         let y_squares = self.player_squares(Player::O);
 
-        Square::winning_sets().iter()
+        Square::WINNERS.iter()
             .filter(|set|
                 set.iter()
                     .all(|square| x_squares.contains(square)) ||
@@ -142,18 +142,16 @@ impl Square {
         }
     }
 
-    fn winning_sets() -> Vec<BTreeSet<Square>> {
-        vec![
-            FromIterator::from_iter(vec![Square::A, Square::B, Square::C]),
-            FromIterator::from_iter(vec![Square::D, Square::E, Square::F]),
-            FromIterator::from_iter(vec![Square::G, Square::H, Square::I]),
-            FromIterator::from_iter(vec![Square::C, Square::E, Square::G]),
-            FromIterator::from_iter(vec![Square::A, Square::E, Square::I]),
-            FromIterator::from_iter(vec![Square::A, Square::D, Square::G]),
-            FromIterator::from_iter(vec![Square::B, Square::E, Square::H]),
-            FromIterator::from_iter(vec![Square::C, Square::F, Square::I]),
-        ]
-    }
+    const WINNERS: [[Square; 3]; 8] = [
+            [Square::A, Square::B, Square::C],
+            [Square::D, Square::E, Square::F],
+            [Square::G, Square::H, Square::I],
+            [Square::C, Square::E, Square::G],
+            [Square::A, Square::E, Square::I],
+            [Square::A, Square::D, Square::G],
+            [Square::B, Square::E, Square::H],
+            [Square::C, Square::F, Square::I],
+    ];
 }
 
 #[derive(Debug, Eq, PartialEq, PartialOrd, Ord, Clone, Copy)]
