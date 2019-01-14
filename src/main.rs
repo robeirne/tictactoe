@@ -3,6 +3,7 @@ use std::iter::FromIterator;
 use std::fmt;
 use std::io::{stdin, Stdin, stdout, Write, Error, ErrorKind};
 use std::str::FromStr;
+use ansi_term::{Style, Color};
 
 fn main() {
     println!("Tic Tac Toe!\n");
@@ -191,13 +192,15 @@ impl fmt::Display for Game {
     fn fmt(&self, f: &mut fmt::Formatter) -> fmt::Result {
         let mut s = String::new();
         let line_separator = "---|---|---\n";
+        let bold = Style::new().bold();
+        let dim  = Style::new().dimmed();
 
         for (index, (square, o_player)) in self.board.iter().enumerate() {
             match o_player {
                 Some(player) => {
                     if let Some(last) = self.last {
                         if last == *square {
-                            s.push_str(&format!(":{}:|", player))
+                            s.push_str(&format!(" {} |", bold.paint(player.to_string())))
                         } else {
                             s.push_str(&format!(" {} |", player))
                         }
@@ -205,7 +208,7 @@ impl fmt::Display for Game {
                         s.push_str(&format!(" {} |", player))
                     }
                 },
-                None => s.push_str(&format!(" {} |", square.to_string().to_lowercase()))
+                None => s.push_str(&format!(" {} |", dim.paint(square.to_string().to_lowercase())))
             } 
 
             if (index + 1 ) % 3 == 0 {
@@ -238,6 +241,12 @@ impl fmt::Display for Square {
 
 impl fmt::Display for Player {
     fn fmt(&self, f: &mut fmt::Formatter) -> fmt::Result {
-        write!(f, "{:?}", self)
+        let color = match self {
+            Player::X => Color::Red,
+            Player::O => Color::Blue,
+        };
+
+        let player = format!("{:?}", self);
+        write!(f, "{}", color.paint(player))
     }
 }

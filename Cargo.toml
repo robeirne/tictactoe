@@ -5,3 +5,4 @@ authors = ["Ryan O'Beirne <ryanobeirne@gmail.com>"]
 edition = "2018"
 
 [dependencies]
+ansi_term = "0.11.0"
