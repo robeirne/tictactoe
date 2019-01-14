@@ -5,6 +5,7 @@ use std::io::{stdin, Stdin, stdout, Write, Error, ErrorKind};
 use std::str::FromStr;
 
 fn main() {
+    println!("Tic Tac Toe!\n");
     let mut game = Game::new();
     let outcome = game.play_game();
     println!("{}\n{}", game, outcome);
@@ -49,6 +50,10 @@ impl Game {
             stdout().flush().expect("Problem writing to stdout!");
 
             let square = Square::from_input(&stdin());
+            if self.square_occupied(&square) { 
+                eprintln!("Square {} is occupied!", &square);
+                continue;
+            }
 
             let play_outcome = self.execute(player, square);
 
@@ -58,6 +63,10 @@ impl Game {
                 PlayOutcome::Win(p) => break GameOutcome::Winner(p),
             }
         }
+    }
+
+    fn square_occupied(&self, square: &Square) -> bool {
+        self.0.get(square).unwrap().is_some()
     }
 
     fn execute(&mut self, player: Player, square: Square) -> PlayOutcome {
@@ -76,13 +85,13 @@ impl Game {
         let x_squares = self.player_squares(Player::X);
         let y_squares = self.player_squares(Player::O);
 
-        for set in Square::winning_sets() {
-            if x_squares == set || y_squares == set {
-                return true;
-            }
-        }
-
-        false
+        Square::winning_sets().iter()
+            .filter(|set|
+                set.iter()
+                    .all(|square| x_squares.contains(square)) ||
+                set.iter()
+                    .all(|square| y_squares.contains(square))
+            ).count() > 0
     }
 
     fn player_squares(&self, player: Player) -> BTreeSet<Square> {
@@ -119,10 +128,11 @@ impl Square {
     fn from_input(stdin: &Stdin) -> Square {
         let mut buf = String::new();
         stdin.read_line(&mut buf).expect("Problem reading stdin!");
+        buf = buf.trim().to_string();
         match Square::from_str(&buf) {
             Ok(square) => square,
-            Err(e) => {
-                eprintln!("Invalid square: {}", e);
+            Err(_) => {
+                eprint!("Invalid square: \"{}\"\nTry again: ", buf);
                 Square::from_input(stdin)
             }
         }
