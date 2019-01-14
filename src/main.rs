@@ -12,27 +12,30 @@ fn main() {
 }
 
 #[derive(Debug, Clone)]
-struct Game(BTreeMap<Square, Option<Player>>);
+struct Game {
+    board: BTreeMap<Square, Option<Player>>,
+    last: Option<Square>,
+}
 
 impl Game {
     fn new() -> Game {
-        let mut game = BTreeMap::new();
+        let board = FromIterator::from_iter(vec![
+            (Square::A, None),
+            (Square::B, None),
+            (Square::C, None),
+            (Square::D, None),
+            (Square::E, None),
+            (Square::F, None),
+            (Square::G, None),
+            (Square::H, None),
+            (Square::I, None),
+        ]);
 
-        game.insert(Square::A, None);
-        game.insert(Square::B, None);
-        game.insert(Square::C, None);
-        game.insert(Square::D, None);
-        game.insert(Square::E, None);
-        game.insert(Square::F, None);
-        game.insert(Square::G, None);
-        game.insert(Square::H, None);
-        game.insert(Square::I, None);
-
-        Game(game)
+        Game { board, last: None }
     }
 
     fn is_complete(&self) -> bool {
-        self.0.values()
+        self.board.values()
             .all(|player| player.is_some())    
     }
 
@@ -59,18 +62,19 @@ impl Game {
 
             match play_outcome {
                 PlayOutcome::Next(_) => i += 1,
-                PlayOutcome::Draw => break GameOutcome::Draw,
-                PlayOutcome::Win(p) => break GameOutcome::Winner(p),
+                PlayOutcome::Draw    => break GameOutcome::Draw,
+                PlayOutcome::Win(p)  => break GameOutcome::Winner(p),
             }
         }
     }
 
     fn square_occupied(&self, square: &Square) -> bool {
-        self.0.get(square).unwrap().is_some()
+        self.board.get(square).unwrap().is_some()
     }
 
     fn execute(&mut self, player: Player, square: Square) -> PlayOutcome {
-        self.0.insert(square, Some(player));
+        self.board.insert(square, Some(player));
+        self.last = Some(square);
 
         if self.has_winner() {
             PlayOutcome::Win(player)
@@ -95,7 +99,7 @@ impl Game {
     }
 
     fn player_squares(&self, player: Player) -> BTreeSet<Square> {
-        self.0.iter()
+        self.board.iter()
             .filter(|(_, op)| *op == &Some(player))
             .map(|(square, _)| *square)
             .collect()
@@ -190,11 +194,21 @@ impl fmt::Display for Game {
         let mut s = String::new();
         let line_separator = "---|---|---\n";
 
-        for (index, (square, o_player)) in self.0.iter().enumerate() {
-           match o_player {
-               Some(player) => s.push_str(&format!(" {} |", player)),
-               None       => s.push_str(&format!(" {} |", square.to_string().to_lowercase()))
-           } 
+        for (index, (square, o_player)) in self.board.iter().enumerate() {
+            match o_player {
+                Some(player) => {
+                    if let Some(last) = self.last {
+                        if last == *square {
+                            s.push_str(&format!(":{}:|", player))
+                        } else {
+                            s.push_str(&format!(" {} |", player))
+                        }
+                    } else {
+                        s.push_str(&format!(" {} |", player))
+                    }
+                },
+                None => s.push_str(&format!(" {} |", square.to_string().to_lowercase()))
+            } 
 
             if (index + 1 ) % 3 == 0 {
                 s.pop();
