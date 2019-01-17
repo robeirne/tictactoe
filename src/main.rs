@@ -1,4 +1,4 @@
-use std::collections::{BTreeMap, BTreeSet};
+use std::collections::BTreeMap;
 use std::iter::FromIterator;
 use std::fmt;
 use std::io::{stdin, Stdin, stdout, Write, Error, ErrorKind};
@@ -99,7 +99,7 @@ impl Game {
             ).count() > 0
     }
 
-    fn player_squares(&self, player: Player) -> BTreeSet<Square> {
+    fn player_squares(&self, player: Player) -> Vec<Square> {
         self.board.iter()
             .filter(|(_, op)| *op == &Some(player))
             .map(|(square, _)| *square)
